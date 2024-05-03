@@ -1,6 +1,6 @@
 import { useReducer, useMemo, createContext, ReactNode } from "react";
 import { initialState, budgetReducer } from "../reducer/budget-reducer";
-import type { DraftExpense } from "../types";
+import type { DraftExpense, Expense } from "../types";
 
 export type BudgetContextProps = {
   budget: number;
@@ -9,6 +9,7 @@ export type BudgetContextProps = {
   modal: boolean;
   showModal: () => void;
   closeModal: () => void;
+  expenses: Expense[];
   addExpense: (expense: DraftExpense) => void;
 };
 
@@ -19,6 +20,7 @@ export const BudgetContext = createContext<BudgetContextProps>({
   modal: false,
   showModal: () => {},
   closeModal: () => {},
+  expenses: [],
   addExpense: () => {},
 });
 
@@ -68,6 +70,7 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
         modal: state.modal,
         showModal,
         closeModal,
+        expenses: state.expenses,
         addExpense,
       }}
     >
