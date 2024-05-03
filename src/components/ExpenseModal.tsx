@@ -1,21 +1,25 @@
-import { Fragment } from 'react'
-import { PlusCircleIcon } from '@heroicons/react/24/solid'
-import { Dialog, Transition } from '@headlessui/react'
+import { Fragment } from "react";
+import { PlusCircleIcon } from "@heroicons/react/24/solid";
+import { Dialog, Transition } from "@headlessui/react";
+import ExpenseForm from "./ExpenseForm";
+import useBudget from "../hooks/useBudget";
 
 export default function ExpenseModal() {
+  const { modal, showModal, closeModal } = useBudget();
 
   return (
     <>
       <div className="fixed right-5 bottom-5 flex items-center justify-center">
-        <button
-          type="button"
-        >
-          <PlusCircleIcon className='w-16 h-16 text-blue-600 rounded-full' />
+        <button type="button">
+          <PlusCircleIcon
+            className="w-16 h-16 text-blue-600 rounded-full"
+            onClick={() => showModal()}
+          />
         </button>
       </div>
 
-      <Transition appear show={false} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => { }}>
+      <Transition appear show={modal} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => closeModal()}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -40,9 +44,7 @@ export default function ExpenseModal() {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-
-
-
+                  <ExpenseForm />
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -50,5 +52,5 @@ export default function ExpenseModal() {
         </Dialog>
       </Transition>
     </>
-  )
+  );
 }
