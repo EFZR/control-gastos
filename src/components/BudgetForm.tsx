@@ -2,9 +2,15 @@ import { useState, useMemo, ChangeEvent, FormEvent } from "react";
 import useBudget from "../hooks/useBudget";
 
 export default function BudgetForm() {
+  //#region States
+
   const { addBudget } = useBudget();
   const [budget, setBudget] = useState(0);
   const isValidBudget = useMemo(() => budget > 0 && !isNaN(budget), [budget]);
+
+  //#endregion
+
+  //#region Functions
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     // TODO: Find a better way to handle this.
@@ -16,6 +22,8 @@ export default function BudgetForm() {
     e.preventDefault();
     addBudget(budget);
   }
+
+  //#endregion
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>

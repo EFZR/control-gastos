@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import DatePicker from "react-date-picker";
 import "react-calendar/dist/Calendar.css";
 import "react-date-picker/dist/DatePicker.css";
@@ -10,7 +10,8 @@ import type { DraftExpense, Value } from "../types";
 export default function ExpenseForm() {
   //#region States
 
-  const { addExpense } = useBudget();
+  const { addExpense, updateExpense, editingId, expenses, remainingBudget } =
+    useBudget();
 
   const [expense, setExpense] = useState<DraftExpense>({
     expenseName: "",
@@ -20,6 +21,16 @@ export default function ExpenseForm() {
   });
 
   const [error, setError] = useState<string>("");
+
+  const [prevAmount, setPrevAmount] = useState<number>(0);
+
+  useEffect(() => {
+    if (editingId) {
+      const updateExpense = expenses.filter((exp) => exp.id === editingId)[0];
+      setExpense(updateExpense);
+      setPrevAmount(updateExpense.amount);
+    }
+  }, [editingId]);
 
   //#endregion
 
@@ -46,8 +57,17 @@ export default function ExpenseForm() {
       return;
     }
 
-    // Agregar gasto
-    addExpense(expense);
+    if (expense.amount - prevAmount > remainingBudget) {
+      setError("No puedes exceder el presupuesto total");
+      return;
+    }
+
+    // Agregar o actulizar gasto
+    if (editingId) {
+      updateExpense({ ...expense, id: editingId });
+    } else {
+      addExpense(expense);
+    }
 
     // Reiniciar los states
     setExpense({
@@ -61,10 +81,12 @@ export default function ExpenseForm() {
 
   //#endregion
 
+  //#region Return
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <legend className="uppercase text-center text-2xl font-black border-b-4 border-blue-500 py-2">
-        Nuevo Gasto
+        {editingId ? "Guardar Cambios" : "Nuevo Gasto"}
       </legend>
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
@@ -113,9 +135,7 @@ export default function ExpenseForm() {
           value={expense.category}
           onChange={handleChangeInput}
         >
-          <option value="">
-            -- Seleccione --
-          </option>
+          <option value="">-- Seleccione --</option>
           {categories.map((category) => (
             <option value={category.id} key={category.id}>
               {category.name}
@@ -136,7 +156,10 @@ export default function ExpenseForm() {
       <input
         type="submit"
         className="bg-blue-600 cursor-pointer w-full p-2 text-white uppercase font-bold rounded-lg"
+        value={editingId ? "Guardar Cambios" : "Agregar Gasto"}
       />
     </form>
   );
+
+  //#endregion
 }
